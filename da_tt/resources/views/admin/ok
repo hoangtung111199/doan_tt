@@ -1,0 +1,81 @@
+  public function viewThemad()
+    {
+        return view('admin.themad');
+    }
+    public function checkThemad(Request $re)
+    {
+       if($re->adAcc==null||$re->adPass==null)
+        {
+           
+            Session::forget('lg_err');
+            $messages = [
+                'adAcc.required'=>'Vui lòng điền thông tin tài khoản',
+                'adPass.required'=>'Vui lòng điền thông tin mật adẩu',
+                'adTen.required'=>'Vui lòng điền tên của bạn',
+            ];
+
+            $this->validate($re,[
+                'adAcc'=>'required',
+                'adPass'=>'required',
+                'adTen'=>'required',
+            ],$messages);
+
+            $errors= $validate->errors();
+
+        }
+        else
+        {
+            $data=array();
+            $data['adID'] = rand(0,100).strlen($re->adAcc).strlen($re->adPass);
+            $data['adAcc']=$re->adAcc;
+            $data['adPass']=$re->adPass;
+            $data['adTen']=$re->adTen;
+            DB::table('tbl_admin')->insert($data);
+            
+            return redirect('ad');
+        }
+
+    }
+    public function adDeletead($id)
+    {
+        DB::table('tbl_admin')->where('adID',$id)->delete();
+        return redirect('ad');
+    }
+     public function viewSuaad($id)
+    {
+        $db = DB::table('tbl_admin')->where('adID',$id)->get();
+        return view('admin.suaad')->with('db',$db);
+    }
+    public function Suaad(Request $re, $id)
+    {
+        if($re->adAcc==null||$re->adPass==null||$re->adTen==null)
+        {
+           
+            Session::forget('lg_err');
+            $messages = [
+                'adAcc.required'=>'Vui lòng điền thông tin tài khảon',
+                'adPass.required'=>'Vui lòng điền thông tin mật adẩu',
+                'adTen.required'=>'Vui lòng điền tên của bạn',
+            ];
+
+            $this->validate($re,[
+                'adAcc'=>'required',
+                'adPass'=>'required',
+                'adTen'=>'required',
+            ],$messages);
+
+            $errors= $validate->errors();
+
+        }
+        else
+        {
+            $data=array();
+            $data['adID'] = $id;
+            $data['adAcc']=$re->adAcc;
+            $data['adPass']=$re->adPass;
+            $data['adTen']=$re->adTen;
+            DB::table('tbl_admin')->where('adID',$id)->update($data);
+            
+            return redirect('ad');
+        }
+    }
